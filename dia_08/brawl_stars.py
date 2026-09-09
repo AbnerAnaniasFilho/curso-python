@@ -1,20 +1,32 @@
 # %%
+import os
 import pandas as pd
 import requests
+from dotenv import load_dotenv
+
+load_dotenv()
+
+chave_api_brawl_stars = os.getenv("CHAVE_API_BRAWL_STARS")
 
 url = "https://api.brawlstars.com/v1/brawlers"
 
-headers = {"Authorization": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiIsImtpZCI6IjI4YTMxOGY3LTAwMDAtYTFlYi03ZmExLTJjNzQzM2M2Y2NhNSJ9."
-"eyJpc3MiOiJzdXBlcmNlbGwiLCJhdWQiOiJzdXBlcmNlbGw6Z2FtZWFwaSIsImp0aSI6ImI1MWU0ZjFiLTExMjAtNDU4YS05MzQzLWM4NWE5NGE1ODM5YiIsImlhdCI6MTc4O"
-"DkxMjc3MCwic3ViIjoiZGV2ZWxvcGVyLzk3NWQyN2IyLTQzMzAtNDhkYy05NmFmLWM2MzI4NTRjODI4MiIsInNjb3BlcyI6WyJicmF3bHN0YXJzIl0sImxpbWl0cyI6W3sidGl"
-"lciI6ImRldmVsb3Blci9zaWx2ZXIiLCJ0eXBlIjoidGhyb3R0bGluZyJ9LHsiY2lkcnMiOlsiMTc3LjEwMi45Ni4xOTMiXSwidHlwZSI6ImNsaWVudCJ9XX0.T25HP65cDEj-S8"
-"d-7U6M0owP_ktDSt5TG2X02uwODZcBdrR07frrIBy0CvFPF4k3nln0k3nttBCKfjNrEYEcWw"}
+headers = {
+    "Authorization": f"Bearer {chave_api_brawl_stars}"
+}
 
 resposta = requests.get(url, headers=headers)
 
 print("Status Code:", resposta.status_code)
 
-dados_json = resposta.json()
-df = pd.DataFrame(dados_json["items"])
-df.to_csv("brawlers.csv", sep=";", index=False)
+# Verifica se a requisição foi um sucesso (código 200)
+if resposta.status_code == 200:
+    dados_json = resposta.json()
+    df = pd.DataFrame(dados_json["items"])
+    df.to_csv("brawlers.csv", sep=";", index=False)
+    print("Sucesso! Arquivo brawlers.csv foi criado.")
+else:
+    # Se falhar, imprime a mensagem de erro que o servidor enviou
+    print("A API recusou a conexão. Detalhes do erro:")
+    print(resposta.text)# %%
+
 # %%
